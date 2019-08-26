@@ -25,7 +25,7 @@ function authenticate() {
 	// 		'Content-Type': 'application/x-www-form-urlencoded'
 	// 	}
 	// })
-	var scopes = '';
+	var scopes = 'streaming user-read-email user-follow-read playlist-read-collaborative playlist-read-private';
 	window.location.replace('https://accounts.spotify.com/authorize' +
   '?grant_type=client_credentials&response_type=code' + '&client_id=' + clientID + (scopes ? '&scope=' + encodeURIComponent(scopes) : '') + '&redirect_uri=' + encodeURIComponent(redirectURI));
 }
