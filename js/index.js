@@ -12,16 +12,27 @@ var userHTML = "",
 	loginDiv = document.getElementById('login');
 
 const clientID = `b0c1136a86af4a779098455e2d3c61bd`,
-	redirectURI = ``;
+	clientSecret = ``,
+	redirectURI = `https://spotify-showcase.herokuapp.com/`;
 
 function authenticate() {
+	// fetch('https://accounts.spotify.com/api/token', {
+	// 	method: 'POST',
+	// 	body: {
+	// 		'grant_type': 'client_credentials'
+	// 	},
+	// 	headers: {
+	// 		'Content-Type': 'application/x-www-form-urlencoded'
+	// 	}
+	// })
 	var scopes = '';
 	window.location.replace('https://accounts.spotify.com/authorize' +
-  '?response_type=code' + '&client_id=' + clientID + (scopes ? '&scope=' + encodeURIComponent(scopes) : '') + '&redirect_uri=' + encodeURIComponent(redirectURI));
+  '?grant_type=client_credentials&response_type=code' + '&client_id=' + clientID + (scopes ? '&scope=' + encodeURIComponent(scopes) : '') + '&redirect_uri=' + encodeURIComponent(redirectURI));
 }
 
 if (authToken.length > 0) {
-	fetchUsers();
+	// fetchUsers();
+	loginDiv.style.display = "none";
 	users.style.display = "grid";
 	music.style.display = "grid";
 	users.innerHTML = userHTML;
