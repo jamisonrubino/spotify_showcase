@@ -42,6 +42,7 @@ if (window.location.href.indexOf('access_token') > -1) {
 }
 
 if (getCookie('access_token').length > 0) {
+	fetchUsers();
 	loginDiv.style.display = "none";
 	usersDiv.style.display = "grid";
 	musicDiv.style.display = "grid";
