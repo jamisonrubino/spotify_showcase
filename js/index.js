@@ -28,12 +28,16 @@ const clientID = `b0c1136a86af4a779098455e2d3c61bd`,
 
 function authenticate() {
 	var scopes = 'streaming user-read-email user-follow-read playlist-read-collaborative playlist-read-private';
+	//
+	// window.location.replace('https://accounts.spotify.com/authorize' +
+  // '?grant_type=client_credentials&response_type=code' + '&client_id=' + clientID + (scopes ? '&scope=' + encodeURIComponent(scopes) : '') + '&redirect_uri=' + encodeURIComponent(redirectURI));
 
 	window.location.replace('https://accounts.spotify.com/authorize' +
-  '?grant_type=client_credentials&response_type=code' + '&client_id=' + clientID + (scopes ? '&scope=' + encodeURIComponent(scopes) : '') + '&redirect_uri=' + encodeURIComponent(redirectURI));
+	'?response_type=token' + '&client_id=' + clientID + (scopes ? '&scope=' + encodeURIComponent(scopes) : '') + '&redirect_uri=' + encodeURIComponent(redirectURI)) + '&state=123';
 }
 
-if ((new URL(window.location.href)).searchParams.get("code") !== null) {
+// if ((new URL(window.location.href)).searchParams.get("code") !== null) {
+if ((new URL(window.location.href)).searchParams.get("access_token") !== null) {
 	setAuth();
 } else if (getCookie('access_token').length > 0) {
 	loginDiv.style.display = "none";
@@ -61,7 +65,7 @@ function fetchUsers() {
 
 // fetch a single user object
 function fetchUser(selectedUser, user = null) {
-	fetch(`https://api.spotify.com/v1/users/${selectedUser}`, {headers: {'Authorization': `Bearer ${auth.accessToken}`}})
+	fetch(`https://api.spotify.com/v1/users/${selectedUser}`, {headers: {'Authorization': `Bearer ${getCookie('access_token')}`}})
 		.then(response => user = response.json())
 	return user;
 }
@@ -69,7 +73,7 @@ function fetchUser(selectedUser, user = null) {
 // fetch a list of playlists
 function fetchPlaylists(selectedUser, playlists = null) {
 	playlistsHTML = "";
-	fetch(`https://api.spotify.com/v1/users/${selectedUser}/playlists`, {headers: {'Authorization': `Bearer ${auth.accessToken}`}})
+	fetch(`https://api.spotify.com/v1/users/${selectedUser}/playlists`, {headers: {'Authorization': `Bearer ${getCookie('access_token')}`}})
 		.then(response=>playlists=(response.json()).items)
 	console.log('playlists', playlists);
 	let i = -1;
@@ -101,33 +105,40 @@ function loadPlaylist(playlist) {
 //==============SET AUTH COOKIE
 
 function setAuth() {
-	let authCode = (new URL(window.location.href)).searchParams.get("code"),
-		bodyObj = {
-			'grant_type': 'authorization_code',
-			'code': authCode,
-			'redirect_uri': redirectURI
-		},
-		body = bodyObj => Object.keys(bodyObj).map(k => encodeURIComponent(k) + '=' + encodeURIComponent(bodyObj[k])).join('&');
+	let accessToken = (new URL(window.location.href)).searchParams.get("access_token"),
+		now = new Date(),
+		time = now.getTime(),
+		expiration = time + auth.expires_in
+	now.setTime(expiration)
+	document.cookie = "access_token=" + accessToken + "; expires=" + now.toGMTString() + "; path=/";
 
-	fetch('https://accounts.spotify.com/api/token', {
-		method: 'POST',
-		mode: 'cors',
-		credentials: 'include',
-		headers: {
-			'Content-Type': 'application/x-www-form-urlencoded',
-			'Authorization': `Basic ${window.btoa(clientID)}:${window.btoa(clientSecret)}`
-		},
-		body: body
-	})
-		.then(res=>{
-			auth = res.json()
-			let now = new Date(),
-				time = now.getTime(),
-				expiration = time + auth.expires_in
-			now.setTime(expiration)
-			document.cookie = "access_token=" + auth.access_token + "; expires=" + now.toGMTString() + "; path=/";
-		})
-		.catch(err=>console.log("authentication error", err))
+	// let authCode = (new URL(window.location.href)).searchParams.get("code"),
+	// 	bodyObj = {
+	// 		'grant_type': 'authorization_code',
+	// 		'code': authCode,
+	// 		'redirect_uri': redirectURI
+	// 	},
+	// 	body = bodyObj => Object.keys(bodyObj).map(k => encodeURIComponent(k) + '=' + encodeURIComponent(bodyObj[k])).join('&');
+	//
+	// fetch('https://accounts.spotify.com/api/token', {
+	// 	method: 'POST',
+	// 	mode: 'cors',
+	// 	credentials: 'include',
+	// 	headers: {
+	// 		'Content-Type': 'application/x-www-form-urlencoded',
+	// 		'Authorization': `Basic ${window.btoa(clientID)}:${window.btoa(clientSecret)}`
+	// 	},
+	// 	body: body
+	// })
+	// 	.then(res=>{
+	// 		auth = res.json()
+	// 		let now = new Date(),
+	// 			time = now.getTime(),
+	// 			expiration = time + auth.expires_in
+	// 		now.setTime(expiration)
+	// 		document.cookie = "access_token=" + auth.access_token + "; expires=" + now.toGMTString() + "; path=/";
+	// 	})
+	// 	.catch(err=>console.log("authentication error", err))
 }
 
 function getCookie(cname) {
