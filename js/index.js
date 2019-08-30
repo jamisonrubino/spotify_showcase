@@ -1,12 +1,21 @@
-console.log('update: redirectURI after heroku')
-
 // css flex grid for users
-//
+// grab uri parameter "code" from Spotify callback, create cookie
+
+// how to load users
+// 	hidden search bar that adds users to a txt file which is loaded into js file
+// 		advantages: no new heroku uploads for each list update
+//	hard code the list into JS (users array)
+//		downside: reupload to heroku with every users list change
+// 	find user on spotify
+//		(...) -> copy spotify URI
+// fix login cookie
+// add user list
+// troubleshoot fetch functions
 
 var userHTML = "",
 	playlistHTML = "",
-	users = [],
-	authToken = "",
+	users = ['1UfzhwcOR4yfX7yHTPfC9m', '6TLwD7HPWuiOzvXEa3oCNe', '0MmPL9gu4CqApuGB28aT9d'],
+	authCode = "",
 	users = document.getElementById('users'),
 	music = document.getElementById('music'),
 	loginDiv = document.getElementById('login');
@@ -26,11 +35,14 @@ function authenticate() {
 	// 	}
 	// })
 	var scopes = 'streaming user-read-email user-follow-read playlist-read-collaborative playlist-read-private';
+
 	window.location.replace('https://accounts.spotify.com/authorize' +
   '?grant_type=client_credentials&response_type=code' + '&client_id=' + clientID + (scopes ? '&scope=' + encodeURIComponent(scopes) : '') + '&redirect_uri=' + encodeURIComponent(redirectURI));
 }
 
-if (authToken.length > 0) {
+setAuthCookies();
+// check if the user has been authorized by Spotify
+if (authCode.length > 0) {
 	// fetchUsers();
 	loginDiv.style.display = "none";
 	users.style.display = "grid";
@@ -56,7 +68,7 @@ function fetchUsers() {
 // fetch a single user object
 function fetchUser(selectedUser) {
 	var user;
-	fetch(`https://api.spotify.com/v1/users/${selectedUser}`, {'Authorization': `Bearer ${authToken}`})
+	fetch(`https://api.spotify.com/v1/users/${selectedUser}`, {'Authorization': `Bearer ${authCode}`})
 		.then(response=>response.json())
 		.then(resJson=>{
 			user = resJson;
@@ -67,7 +79,7 @@ function fetchUser(selectedUser) {
 
 // fetch a single playlist
 function fetchPlaylist(playlist) {
-	fetch(`https://api.spotify.com/v1/playlists/${playlist}`, {'Authorization': `Bearer ${authToken}`})
+	fetch(`https://api.spotify.com/v1/playlists/${playlist}`, {'Authorization': `Bearer ${authCode}`})
 		.then(response=>response.json())
 		.then(resJson=>{
 		})
@@ -76,7 +88,7 @@ function fetchPlaylist(playlist) {
 // fetch a list of playlists
 function fetchPlaylists(selectedUser) {
 	var playlists;
-	fetch(`https://api.spotify.com/v1/users/${selectedUser}/playlists`, {'Authorization': `Bearer ${authToken}`})
+	fetch(`https://api.spotify.com/v1/users/${selectedUser}/playlists`, {'Authorization': `Bearer ${authCode}`})
 		.then(response=>response.json())
 		.then(resJson=>{
 			playlists = resJson.items;
@@ -89,7 +101,9 @@ function fetchPlaylists(selectedUser) {
 //==============COOKIES
 
 function setAuthCookies() {
-	document.cookie = `authToken=${authToken}`;
+	authCode = (new URL(window.location.href)).searchParams.get("code")
+	if (authCode.length>0)
+		document.cookie = `authCode=${authCode}`;
 }
 
 function getCookie(cname) {
