@@ -63,7 +63,7 @@ if (authCode.length > 0) {
 // // fetch all user objects
 function fetchUsers() {
 	for (let i=0; i<users.length; i++) {
-		var user = fetchUser(users[i]);
+	 	let user = fetchUser(""+users[i]);
 		console.log(user)
 		userHTML += `<div class="user" onclick="fetchPlaylists('${user.id}')">${user.display_name}</div>`;
 	}
@@ -72,7 +72,7 @@ function fetchUsers() {
 
 // fetch a single user object
 function fetchUser(selectedUser, user = null) {
-	fetch(`https://api.spotify.com/v1/users/${selectedUser}`, {'Authorization': `Bearer ${authCode}`})
+	fetch(`https://api.spotify.com/v1/users/${selectedUser}`, {headers: {'Authorization': `Bearer ${authCode}`}})
 		.then(response => user = response.json())
 	return user;
 }
@@ -80,7 +80,7 @@ function fetchUser(selectedUser, user = null) {
 // fetch a list of playlists
 function fetchPlaylists(selectedUser, playlists = null) {
 	playlistsHTML = "";
-	fetch(`https://api.spotify.com/v1/users/${selectedUser}/playlists`, {'Authorization': `Bearer ${authCode}`})
+	fetch(`https://api.spotify.com/v1/users/${selectedUser}/playlists`, {headers: {'Authorization': `Bearer ${authCode}`}})
 		.then(response=>playlists=(response.json()).items)
 	console.log('playlists', playlists);
 	let i = -1;
