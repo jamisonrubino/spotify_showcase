@@ -69,7 +69,8 @@ function fetchUsers() {
 // fetch a single user object
 function fetchUser(selectedUser, user = null) {
 	fetch(`https://api.spotify.com/v1/users/${selectedUser}`, {headers: {'Authorization': `Bearer ${getCookie('access_token')}`}})
-		.then(response => user = response.json())
+		.then(response => response.json())
+		.then(userRes => user = userRes)
 	return user;
 }
 
@@ -77,7 +78,8 @@ function fetchUser(selectedUser, user = null) {
 function fetchPlaylists(selectedUser, playlists = null) {
 	playlistsHTML = "";
 	fetch(`https://api.spotify.com/v1/users/${selectedUser}/playlists`, {headers: {'Authorization': `Bearer ${getCookie('access_token')}`}})
-		.then(response=>playlists=(response.json()).items)
+		.then(response => response.json())
+		.then(playlistRes => playlists = playlistRes.items)
 	console.log('playlists', playlists);
 	let i = -1;
 	while (i++ < playlists.length && i < 50) {
