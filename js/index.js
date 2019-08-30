@@ -62,7 +62,7 @@ async function fetchUsers() {
 	for (let i=0; i<users.length; i++) {
 	 	await fetchUser(`${users[i]}`);
 		console.log(user)
-		usersHTML += `<div class="user" onclick="fetchPlaylists('${user.id}')">${user.display_name}</div>`;
+		usersHTML += `<div class="user" onclick="fetchPlaylists('${user.display_name}')">${user.display_name}</div>`;
 	}
 	usersDiv.innerHTML = usersHTML;
 }
