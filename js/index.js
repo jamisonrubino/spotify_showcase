@@ -16,7 +16,8 @@
 var usersHTML = "",
 	playlistsHTML = "",
 	users = ['5vphzswukltgasui8ytdujtdv', '5vphzswukltgasui8ytdujtdv', '5vphzswukltgasui8ytdujtdv'],
-	user = null,
+	user,
+	playlists,
 	accessToken,
 	usersDiv = document.getElementById('users'),
 	musicDiv = document.getElementById('music'),
@@ -62,7 +63,7 @@ async function fetchUsers() {
 	for (let i=0; i<users.length; i++) {
 	 	await fetchUser(`${users[i]}`);
 		console.log(user)
-		usersHTML += `<div class="user" onclick="fetchPlaylists('${user.display_name}')">${user.display_name}</div>`;
+		usersHTML += `<div class="user" onclick="fetchPlaylists('${user.id}')">${user.display_name}</div>`;
 	}
 	usersDiv.innerHTML = usersHTML;
 }
@@ -79,15 +80,13 @@ function fetchPlaylists(selectedUser) {
 	playlistsHTML = "";
 	fetch(`https://api.spotify.com/v1/users/${selectedUser}/playlists`, {headers: {'Authorization': `Bearer ${getCookie('access_token')}`}})
 		.then(response => response.json())
-		.then(playlistRes => {
-			let playlists = playlistRes.items;
+		.then(res => {
+			playlists = res.items;
 			for (let i=0; i<playlists.length; i++) {
 				playlistsHTML += `<div class="playlists" onclick="loadPlaylist('${playlists[i].id}')">${playlists[i].name} - ${playlists[i].tracks.total}</div>`;
 				console.log("playlist", playlists[i])
 			}
 		})
-	console.log('playlists', playlists);
-
 }
 
 function loadPlaylist(playlist) {
