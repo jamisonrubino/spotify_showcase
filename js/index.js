@@ -28,7 +28,7 @@ const clientID = `b0c1136a86af4a779098455e2d3c61bd`,
 	redirectURI = `https://spotify-showcase.herokuapp.com/`;
 
 function authenticate() {
-	var scopes = 'streaming user-read-email user-follow-read playlist-read-collaborative playlist-read-private';
+	var scopes = 'streaming user-read-email user-follow-read';
 	//
 	// window.location.replace('https://accounts.spotify.com/authorize' +
   // '?grant_type=client_credentials&response_type=code' + '&client_id=' + clientID + (scopes ? '&scope=' + encodeURIComponent(scopes) : '') + '&redirect_uri=' + encodeURIComponent(redirectURI));
@@ -75,12 +75,12 @@ function fetchUser(selectedUser) {
 }
 
 // fetch a list of playlists
-function fetchPlaylists(selectedUser, playlists = null) {
+function fetchPlaylists(selectedUser) {
 	playlistsHTML = "";
 	fetch(`https://api.spotify.com/v1/users/${selectedUser}/playlists`, {headers: {'Authorization': `Bearer ${getCookie('access_token')}`}})
 		.then(response => response.json())
 		.then(playlistRes => {
-			playlists = playlistRes.items;
+			let playlists = playlistRes.items;
 			for (let i=0; i<playlists.length; i++) {
 				playlistsHTML += `<div class="playlists" onclick="loadPlaylist('${playlists[i].id}')">${playlists[i].name} - ${playlists[i].tracks.total}</div>`;
 				console.log("playlist", playlists[i])
