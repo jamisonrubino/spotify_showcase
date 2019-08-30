@@ -13,7 +13,7 @@
 // troubleshoot fetch functions
 
 // '1UfzhwcOR4yfX7yHTPfC9m', '6TLwD7HPWuiOzvXEa3oCNe', '0MmPL9gu4CqApuGB28aT9d'
-var userHTML = "",
+var usersHTML = "",
 	playlistsHTML = "",
 	users = ['5vphzswukltgasui8ytdujtdv', '5vphzswukltgasui8ytdujtdv', '5vphzswukltgasui8ytdujtdv'],
 	user = null,
@@ -62,7 +62,7 @@ async function fetchUsers() {
 	for (let i=0; i<users.length; i++) {
 	 	await fetchUser(`${users[i]}`);
 		console.log(user)
-		userHTML += `<div class="user" onclick="fetchPlaylists('${user.id}')">${user.display_name}</div>`;
+		usersHTML += `<div class="user" onclick="fetchPlaylists('${user.id}')">${user.display_name}</div>`;
 	}
 	usersDiv.innerHTML = usersHTML;
 }
