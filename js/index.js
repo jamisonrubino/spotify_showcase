@@ -12,13 +12,15 @@
 // add user list
 // troubleshoot fetch functions
 
+
 var userHTML = "",
-	playlistHTML = "",
+	playlistsHTML = "",
 	users = ['1UfzhwcOR4yfX7yHTPfC9m', '6TLwD7HPWuiOzvXEa3oCNe', '0MmPL9gu4CqApuGB28aT9d'],
 	authCode = "",
-	users = document.getElementById('users'),
-	music = document.getElementById('music'),
-	loginDiv = document.getElementById('login');
+	usersDiv = document.getElementById('users'),
+	musicDiv = document.getElementById('music'),
+	loginDiv = document.getElementById('login'),
+	webPlayer = document.getElementById('webplayer');
 
 const clientID = `b0c1136a86af4a779098455e2d3c61bd`,
 	clientSecret = ``,
@@ -43,11 +45,11 @@ function authenticate() {
 setAuthCookies();
 // check if the user has been authorized by Spotify
 if (authCode.length > 0) {
-	// fetchUsers();
+	fetchUsers();
 	loginDiv.style.display = "none";
-	users.style.display = "grid";
-	music.style.display = "grid";
-	users.innerHTML = userHTML;
+	usersDiv.style.display = "grid";
+	musicDiv.style.display = "grid";
+	webPlayer.style.display = "grid";
 } else {
 	loginDiv.style.display = "block";
 }
@@ -57,44 +59,50 @@ if (authCode.length > 0) {
 //=======================================
 //==============FETCH FUNCTIONS
 
-// fetch all user objects
+// // fetch all user objects
 function fetchUsers() {
 	for (let i=0; i<users.length; i++) {
 		var user = fetchUser(users[i]);
-		userHTML += `<div class="user" onclick="fetchPlaylists(${user.id})">${user.display_name}</div>`;
+		console.log(user)
+		userHTML += `<div class="user" onclick="fetchPlaylists('${user.id}')">${user.display_name}</div>`;
 	}
+	usersDiv.innerHTML = usersHTML;
 }
 
 // fetch a single user object
-function fetchUser(selectedUser) {
-	var user;
+function fetchUser(selectedUser, user = null) {
 	fetch(`https://api.spotify.com/v1/users/${selectedUser}`, {'Authorization': `Bearer ${authCode}`})
-		.then(response=>response.json())
-		.then(resJson=>{
-			user = resJson;
-		})
+		.then(response => user = response.json())
 	return user;
-	// id, images[0].height, images[0].url, images[0].width
-}
-
-// fetch a single playlist
-function fetchPlaylist(playlist) {
-	fetch(`https://api.spotify.com/v1/playlists/${playlist}`, {'Authorization': `Bearer ${authCode}`})
-		.then(response=>response.json())
-		.then(resJson=>{
-		})
 }
 
 // fetch a list of playlists
-function fetchPlaylists(selectedUser) {
-	var playlists;
+function fetchPlaylists(selectedUser, playlists = null) {
+	playlistsHTML = "";
 	fetch(`https://api.spotify.com/v1/users/${selectedUser}/playlists`, {'Authorization': `Bearer ${authCode}`})
-		.then(response=>response.json())
-		.then(resJson=>{
-			playlists = resJson.items;
-		})
-	playlists = resJson.items;
+		.then(response=>playlists=(response.json()).items)
+	console.log('playlists', playlists);
+	let i = -1;
+	while (i++ < playlists.length && i < 50) {
+		playlistsHTML += `<div class="playlists" onclick="loadPlaylist('${playlists[i].id}')">${playlists[i].name} - ${playlists[i].tracks.total}</div>`;
+		console.log("playlist", playlists[i])
+	}
 }
+
+function loadPlaylist(playlist) {
+	webPlayer.innerHTML = `<iframe src="https://open.spotify.com/embed/playlist/${playlist}" width="300" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>`;
+}
+
+// fetch a single playlist
+// function fetchPlaylist(playlist) {
+// 	fetch(`https://api.spotify.com/v1/playlists/${playlist}`, {'Authorization': `Bearer ${authCode}`})
+// 		.then(response=>response.json())
+// 		.then(resJson=>{
+// 			playlistURI =
+// 		})
+// }
+
+
 
 
 //=======================================
