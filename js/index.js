@@ -115,7 +115,7 @@ function setAuth() {
 		credentials: 'include',
 		headers: {
 			'Content-Type': 'application/x-www-form-urlencoded',
-			'Authorization': `Basic ${WindowOrWorkerGlobalScope.btoa(clientID)}:${WindowOrWorkerGlobalScope.btoa(clientSecret)}`
+			'Authorization': `Basic ${window.btoa(clientID)}:${window.btoa(clientSecret)}`
 		},
 		body: body
 	})
