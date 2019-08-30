@@ -16,37 +16,26 @@
 var userHTML = "",
 	playlistsHTML = "",
 	users = ['1UfzhwcOR4yfX7yHTPfC9m', '6TLwD7HPWuiOzvXEa3oCNe', '0MmPL9gu4CqApuGB28aT9d'],
-	authCode = "",
+	auth,
 	usersDiv = document.getElementById('users'),
 	musicDiv = document.getElementById('music'),
 	loginDiv = document.getElementById('login'),
 	webPlayer = document.getElementById('webplayer');
 
 const clientID = `b0c1136a86af4a779098455e2d3c61bd`,
-	clientSecret = ``,
+	clientSecret = `d2b56a558cce4012b3cd7164613981e3`,
 	redirectURI = `https://spotify-showcase.herokuapp.com/`;
 
 function authenticate() {
-	// fetch('https://accounts.spotify.com/api/token', {
-	// 	method: 'POST',
-	// 	body: {
-	// 		'grant_type': 'client_credentials'
-	// 	},
-	// 	headers: {
-	// 		'Content-Type': 'application/x-www-form-urlencoded'
-	// 	}
-	// })
 	var scopes = 'streaming user-read-email user-follow-read playlist-read-collaborative playlist-read-private';
 
 	window.location.replace('https://accounts.spotify.com/authorize' +
   '?grant_type=client_credentials&response_type=code' + '&client_id=' + clientID + (scopes ? '&scope=' + encodeURIComponent(scopes) : '') + '&redirect_uri=' + encodeURIComponent(redirectURI));
 }
 
-if ((new URL(window.location.href)).searchParams.get("code") !== null)
-	setAuthCookies();
-// check if the user has been authorized by Spotify
-if (authCode.length > 0) {
-	fetchUsers();
+if ((new URL(window.location.href)).searchParams.get("code") !== null) {
+	setAuth();
+} else if (getCookie('access_token').length > 0) {
 	loginDiv.style.display = "none";
 	usersDiv.style.display = "grid";
 	musicDiv.style.display = "grid";
@@ -60,7 +49,7 @@ if (authCode.length > 0) {
 //=======================================
 //==============FETCH FUNCTIONS
 
-// // fetch all user objects
+// fetch all user objects
 function fetchUsers() {
 	for (let i=0; i<users.length; i++) {
 	 	let user = fetchUser(""+users[i]);
@@ -72,7 +61,7 @@ function fetchUsers() {
 
 // fetch a single user object
 function fetchUser(selectedUser, user = null) {
-	fetch(`https://api.spotify.com/v1/users/${selectedUser}`, {headers: {'Authorization': `Bearer ${authCode}`}})
+	fetch(`https://api.spotify.com/v1/users/${selectedUser}`, {headers: {'Authorization': `Bearer ${auth.accessToken}`}})
 		.then(response => user = response.json())
 	return user;
 }
@@ -80,7 +69,7 @@ function fetchUser(selectedUser, user = null) {
 // fetch a list of playlists
 function fetchPlaylists(selectedUser, playlists = null) {
 	playlistsHTML = "";
-	fetch(`https://api.spotify.com/v1/users/${selectedUser}/playlists`, {headers: {'Authorization': `Bearer ${authCode}`}})
+	fetch(`https://api.spotify.com/v1/users/${selectedUser}/playlists`, {headers: {'Authorization': `Bearer ${auth.accessToken}`}})
 		.then(response=>playlists=(response.json()).items)
 	console.log('playlists', playlists);
 	let i = -1;
@@ -106,13 +95,39 @@ function loadPlaylist(playlist) {
 
 
 
-//=======================================
-//==============COOKIES
+//=============================================
+//==============POST CLIENT ID AND SECRET
+//==============RECEIVE ACCESS & REFRESH TOKENS
+//==============SET AUTH COOKIE
 
-function setAuthCookies() {
-	authCode = (new URL(window.location.href)).searchParams.get("code")
-	if (authCode.length>0)
-		document.cookie = `authCode=${authCode}`;
+function setAuth() {
+	let authCode = (new URL(window.location.href)).searchParams.get("code"),
+		bodyObj = {
+			'grant_type': 'authorization_code',
+			'code': authCode,
+			'redirect_uri': redirectURI
+		},
+		body = bodyObj => Object.keys(bodyObj).map(k => encodeURIComponent(k) + '=' + encodeURIComponent(bodyObj[k])).join('&');
+
+	fetch('https://accounts.spotify.com/api/token', {
+		method: 'POST',
+		mode: 'cors',
+		credentials: 'include',
+		headers: {
+			'Content-Type': 'application/x-www-form-urlencoded',
+			'Authorization': `Basic ${WindowOrWorkerGlobalScope.btoa(clientID)}:${WindowOrWorkerGlobalScope.btoa(clientSecret)}`
+		},
+		body: body
+	})
+		.then(res=>{
+			auth = res.json()
+			let now = new Date(),
+				time = now.getTime(),
+				expiration = time + auth.expires_in
+			now.setTime(expiration)
+			document.cookie = "access_token=" + auth.access_token + "; expires=" + now.toGMTString() + "; path=/";
+		})
+		.catch(err=>console.log("authentication error", err))
 }
 
 function getCookie(cname) {
