@@ -58,7 +58,7 @@ if (getCookie('access_token').length > 0) {
 //==============FETCH FUNCTIONS
 
 // fetch all user objects
-function fetchUsers() {
+async function fetchUsers() {
 	for (let i=0; i<users.length; i++) {
 	 	await fetchUser(`${users[i]}`);
 		console.log(user)
@@ -68,8 +68,8 @@ function fetchUsers() {
 }
 
 // fetch a single user object
-async function fetchUser(selectedUser) {
-	fetch(`https://api.spotify.com/v1/users/${selectedUser}`, {headers: {'Authorization': `Bearer ${getCookie('access_token')}`}})
+function fetchUser(selectedUser) {
+	return fetch(`https://api.spotify.com/v1/users/${selectedUser}`, {headers: {'Authorization': `Bearer ${getCookie('access_token')}`}})
 		.then(response => response.json())
 		.then(userRes => user = userRes)
 }
