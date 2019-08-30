@@ -111,8 +111,7 @@ function setAuth() {
 	accessToken = url.slice(url.indexOf('=')+1, url.indexOf('&'))
 
 	let now = new Date(),
-		time = now.getTime(),
-		expiration = time + auth.expires_in,
+		expiration = now.getTime() + 3600
 	now.setTime(expiration)
 	document.cookie = "access_token=" + accessToken + "; expires=" + now.toGMTString() + "; path=/";
 
