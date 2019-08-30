@@ -16,7 +16,7 @@
 var userHTML = "",
 	playlistsHTML = "",
 	users = ['1UfzhwcOR4yfX7yHTPfC9m', '6TLwD7HPWuiOzvXEa3oCNe', '0MmPL9gu4CqApuGB28aT9d'],
-	auth,
+	accessToken,
 	usersDiv = document.getElementById('users'),
 	musicDiv = document.getElementById('music'),
 	loginDiv = document.getElementById('login'),
@@ -37,9 +37,11 @@ function authenticate() {
 }
 
 // if ((new URL(window.location.href)).searchParams.get("code") !== null) {
-if ((new URL(window.location.href)).searchParams.get("access_token") !== null) {
+if (window.location.href.indexOf('access_token') > -1) {
 	setAuth();
-} else if (getCookie('access_token').length > 0) {
+}
+
+if (getCookie('access_token').length > 0) {
 	loginDiv.style.display = "none";
 	usersDiv.style.display = "grid";
 	musicDiv.style.display = "grid";
@@ -105,10 +107,12 @@ function loadPlaylist(playlist) {
 //==============SET AUTH COOKIE
 
 function setAuth() {
-	let accessToken = (new URL(window.location.href)).searchParams.get("access_token"),
-		now = new Date(),
+	var url = window.location.href
+	accessToken = url.slice(url.indexOf('=')+1, url.indexOf('&'))
+
+	let now = new Date(),
 		time = now.getTime(),
-		expiration = time + auth.expires_in
+		expiration = time + auth.expires_in,
 	now.setTime(expiration)
 	document.cookie = "access_token=" + accessToken + "; expires=" + now.toGMTString() + "; path=/";
 
