@@ -42,7 +42,8 @@ function authenticate() {
   '?grant_type=client_credentials&response_type=code' + '&client_id=' + clientID + (scopes ? '&scope=' + encodeURIComponent(scopes) : '') + '&redirect_uri=' + encodeURIComponent(redirectURI));
 }
 
-setAuthCookies();
+if ((new URL(window.location.href)).searchParams.get("code") !== null)
+	setAuthCookies();
 // check if the user has been authorized by Spotify
 if (authCode.length > 0) {
 	fetchUsers();
