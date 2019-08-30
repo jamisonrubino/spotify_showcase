@@ -79,13 +79,15 @@ function fetchPlaylists(selectedUser, playlists = null) {
 	playlistsHTML = "";
 	fetch(`https://api.spotify.com/v1/users/${selectedUser}/playlists`, {headers: {'Authorization': `Bearer ${getCookie('access_token')}`}})
 		.then(response => response.json())
-		.then(playlistRes => playlists = playlistRes.items)
+		.then(playlistRes => {
+			playlists = playlistRes.items;
+			for (let i=0; i<playlists.length; i++) {
+				playlistsHTML += `<div class="playlists" onclick="loadPlaylist('${playlists[i].id}')">${playlists[i].name} - ${playlists[i].tracks.total}</div>`;
+				console.log("playlist", playlists[i])
+			}
+		})
 	console.log('playlists', playlists);
-	let i = -1;
-	while (i++ < playlists.length && i < 50) {
-		playlistsHTML += `<div class="playlists" onclick="loadPlaylist('${playlists[i].id}')">${playlists[i].name} - ${playlists[i].tracks.total}</div>`;
-		console.log("playlist", playlists[i])
-	}
+
 }
 
 function loadPlaylist(playlist) {
