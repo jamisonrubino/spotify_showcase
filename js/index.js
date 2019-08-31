@@ -46,9 +46,9 @@ if (window.location.href.indexOf('access_token') > -1 && getCookie('access_token
 if (getCookie('access_token').length > 0) {
 	fetchUsers();
 	loginDiv.style.display = "none";
-	usersDiv.style.display = "";
-	musicDiv.style.display = "";
-	webPlayer.style.display = "";
+	usersDiv.style.display = "inline-block";
+	musicDiv.style.display = "inline-block";
+	webPlayer.style.display = "inline-block";
 } else {
 	loginDiv.style.display = "block";
 }
