@@ -65,6 +65,7 @@ async function fetchUsers() {
 		console.log(user)
 		usersHTML += `<div class="user" onclick="fetchPlaylists('${user.id}')">${user.display_name}</div>`;
 	}
+
 	usersDiv.innerHTML = usersHTML;
 }
 
@@ -77,6 +78,8 @@ function fetchUser(selectedUser) {
 
 // fetch a list of playlists
 function fetchPlaylists(selectedUser) {
+	musicDiv.innerHTML = "";
+	playlists = null;
 	playlistsHTML = "";
 	fetch(`https://api.spotify.com/v1/users/${selectedUser}/playlists`, {headers: {'Authorization': `Bearer ${getCookie('access_token')}`}})
 		.then(response => response.json())
@@ -86,6 +89,7 @@ function fetchPlaylists(selectedUser) {
 				playlistsHTML += `<div class="playlists" onclick="loadPlaylist('${playlists[i].id}')">${playlists[i].name} - ${playlists[i].tracks.total}</div>`;
 				console.log("playlist", playlists[i])
 			}
+			musicDiv.innerHTML = playlistsHTML;
 		})
 }
 
