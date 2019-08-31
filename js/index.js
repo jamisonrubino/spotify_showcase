@@ -39,16 +39,16 @@ function authenticate() {
 }
 
 // if ((new URL(window.location.href)).searchParams.get("code") !== null) {
-if (window.location.href.indexOf('access_token') > -1) {
+if (window.location.href.indexOf('access_token') > -1 && getCookie('access_token').length == 0) {
 	setAuth();
 }
 
 if (getCookie('access_token').length > 0) {
 	fetchUsers();
 	loginDiv.style.display = "none";
-	usersDiv.style.display = "grid";
-	musicDiv.style.display = "grid";
-	webPlayer.style.display = "grid";
+	usersDiv.style.display = "";
+	musicDiv.style.display = "";
+	webPlayer.style.display = "";
 } else {
 	loginDiv.style.display = "block";
 }
