@@ -1,3 +1,6 @@
+// why does access_token cookie die after first api call or wait?
+
+
 // css flex grid for users
 // grab uri parameter "code" from Spotify callback, create cookie
 
@@ -119,7 +122,7 @@ function setAuth() {
 	accessToken = url.slice(url.indexOf('=')+1, url.indexOf('&'))
 
 	let now = new Date(),
-		expiration = now.getTime() + 3600
+		expiration = now.getTime() + 3600000
 	now.setTime(expiration)
 	document.cookie = "access_token=" + accessToken + "; expires=" + now.toGMTString() + "; path=/";
 
