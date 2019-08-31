@@ -1,3 +1,20 @@
+// why does access_token cookie die after first api call or wait?
+
+
+// css flex grid for users
+// grab uri parameter "code" from Spotify callback, create cookie
+
+// how to load users
+// 	hidden search bar that adds users to a txt file which is loaded into js file
+// 		advantages: no new heroku uploads for each list update
+//	hard code the list into JS (users array)
+//		downside: reupload to heroku with every users list change
+// 	find user on spotify
+//		(...) -> copy spotify URI
+// fix login cookie
+// add user list
+// troubleshoot fetch functions
+
 var usersHTML = "",
 	playlistsHTML = "",
 	users = ['5vphzswukltgasui8ytdujtdv', '5vphzswukltgasui8ytdujtdv', '5vphzswukltgasui8ytdujtdv'],
@@ -15,10 +32,15 @@ const clientID = `b0c1136a86af4a779098455e2d3c61bd`,
 
 function authenticate() {
 	var scopes = 'streaming user-read-email user-follow-read';
+	//
+	// window.location.replace('https://accounts.spotify.com/authorize' +
+  // '?grant_type=client_credentials&response_type=code' + '&client_id=' + clientID + (scopes ? '&scope=' + encodeURIComponent(scopes) : '') + '&redirect_uri=' + encodeURIComponent(redirectURI));
+
 	window.location.replace('https://accounts.spotify.com/authorize' +
 	'?response_type=token' + '&client_id=' + clientID + (scopes ? '&scope=' + encodeURIComponent(scopes) : '') + '&redirect_uri=' + encodeURIComponent(redirectURI)) + '&state=123';
 }
 
+// if ((new URL(window.location.href)).searchParams.get("code") !== null) {
 if (window.location.href.indexOf('access_token') > -1 && getCookie('access_token').length == 0)
 	setAuth();
 
@@ -37,11 +59,10 @@ if (getCookie('access_token').length > 0) {
 //=============================
 //==============FETCH FUNCTIONS
 
-// fetch all user objects
+// fetch all user objects and set div#users html
 async function fetchUsers() {
 	for (let i=0; i<users.length; i++) {
 	 	await fetchUser(`${users[i]}`);
-		console.log(user)
 		usersHTML += `<div class="user" onclick="fetchPlaylists('${user.id}')">${user.display_name}</div>`;
 	}
 	usersDiv.innerHTML = usersHTML;
@@ -54,7 +75,7 @@ function fetchUser(selectedUser) {
 		.then(userRes => user = userRes)
 }
 
-// fetch a list of playlists
+// fetch a list of playlists and set div#music html
 function fetchPlaylists(selectedUser) {
 	musicDiv.innerHTML = "";
 	playlists = null;
@@ -64,13 +85,14 @@ function fetchPlaylists(selectedUser) {
 		.then(res => {
 			playlists = res.items;
 			for (let i=0; i<playlists.length; i++) {
-				playlistsHTML += `<div class="playlist" onclick="loadPlaylist('${playlists[i].id}')">${playlists[i].name} - ${playlists[i].tracks.total}</div>`;
+				playlistsHTML += `<div class="playlists" onclick="loadPlaylist('${playlists[i].id}')">${playlists[i].name} - ${playlists[i].tracks.total}</div>`;
 				console.log("playlist", playlists[i])
 			}
 			musicDiv.innerHTML = playlistsHTML;
 		})
 }
 
+// load playlist into div#webplayer
 function loadPlaylist(playlist) {
 	webPlayer.innerHTML = `<iframe src="https://open.spotify.com/embed/playlist/${playlist}" width="300" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>`;
 }

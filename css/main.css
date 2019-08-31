@@ -19,3 +19,14 @@ main {
 #webplayer {
 	display: none;
 }
+
+.user, .playlist {
+	cursor: pointer;
+	padding: 10px 7px;
+	transition: 0.4s all;
+}
+
+.user:hover, .playlist:hover {
+	background: rgba(200, 225, 215);
+
+}
