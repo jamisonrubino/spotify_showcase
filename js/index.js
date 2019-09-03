@@ -1,6 +1,9 @@
+const users = ['5vphzswukltgasui8ytdujtdv', '5vphzswukltgasui8ytdujtdv', '5vphzswukltgasui8ytdujtdv'],
+	clientID = `b0c1136a86af4a779098455e2d3c61bd`,
+	redirectURI = `https://spotify-showcase.herokuapp.com/`;
+
 var usersHTML = "",
 	playlistsHTML = "",
-	users = ['5vphzswukltgasui8ytdujtdv', '5vphzswukltgasui8ytdujtdv', '5vphzswukltgasui8ytdujtdv'],
 	user,
 	playlists,
 	accessToken,
@@ -9,11 +12,7 @@ var usersHTML = "",
 	loginDiv = document.getElementById('login'),
 	webPlayer = document.getElementById('webplayer');
 
-const clientID = `b0c1136a86af4a779098455e2d3c61bd`,
-	clientSecret = `d2b56a558cce4012b3cd7164613981e3`,
-	redirectURI = `https://spotify-showcase.herokuapp.com/`;
-
-function authenticate() {
+function authorize() {
 	var scopes = 'streaming user-read-email user-follow-read';
 	window.location.replace('https://accounts.spotify.com/authorize' +
 	'?response_type=token' + '&client_id=' + clientID + (scopes ? '&scope=' + encodeURIComponent(scopes) : '') + '&redirect_uri=' + encodeURIComponent(redirectURI)) + '&state=123';
@@ -71,14 +70,15 @@ function fetchPlaylists(selectedUser) {
 		})
 }
 
+// load a playlist into Spotify web player
 function loadPlaylist(playlist) {
-	webPlayer.innerHTML = `<iframe src="https://open.spotify.com/embed/playlist/${playlist}" width="300" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>`;
+	webPlayer.innerHTML = `<iframe src="https://open.spotify.com/embed/playlist/${playlist}" width="350" height="480" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>`;
 }
 
 
 
-//=============================
-//==============SET AUTH COOKIE
+//=====================================
+//==============GET AND SET AUTH COOKIE
 
 function setAuth() {
 	var url = window.location.href
