@@ -13,17 +13,6 @@ var usersHTML = "",
 	webPlayer = document.getElementById('webplayer');
 
 
-//====================================
-//======================LOGIN REDIRECT
-
-// triggered by 'login' button click
-function authorize() {
-	var scopes = 'streaming user-read-email user-follow-read';
-	window.location.replace('https://accounts.spotify.com/authorize' +
-	'?response_type=token' + '&client_id=' + clientID + (scopes ? '&scope=' + encodeURIComponent(scopes) : '') + '&redirect_uri=' + encodeURIComponent(redirectURI)) + '&state=123';
-}
-
-
 //==========================================
 //======================PAGE LOAD AUTH CHECK
 
@@ -42,6 +31,47 @@ if (getCookie('access_token').length > 0) {
 	loginDiv.style.display = "block";
 }
 
+
+
+//====================================
+//======================LOGIN REDIRECT
+
+// triggered by 'login' button click
+function authorize() {
+	var scopes = 'streaming user-read-email user-follow-read';
+	window.location.replace('https://accounts.spotify.com/authorize' +
+	'?response_type=token' + '&client_id=' + clientID + (scopes ? '&scope=' + encodeURIComponent(scopes) : '') + '&redirect_uri=' + encodeURIComponent(redirectURI)) + '&state=123';
+}
+
+
+//=============================================
+//======================GET AND SET AUTH COOKIE
+
+function setAuth() {
+	var url = window.location.href
+	accessToken = url.slice(url.indexOf('=')+1, url.indexOf('&'))
+
+	let now = new Date(),
+		expiration = now.getTime() + 3600000
+	now.setTime(expiration)
+	document.cookie = "access_token=" + accessToken + "; expires=" + now.toGMTString() + "; path=/";
+}
+
+function getCookie(cname) {
+  var name = cname + "=";
+  var decodedCookie = decodeURIComponent(document.cookie);
+  var ca = decodedCookie.split(';');
+  for(var i = 0; i <ca.length; i++) {
+    var c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
 
 
 //=====================================
@@ -91,35 +121,4 @@ function fetchPlaylists(selectedUser) {
 // incorporate playlist ID in webplayer's URL and reload webplayer
 function loadPlaylist(playlist) {
 	webPlayer.innerHTML = `<iframe src="https://open.spotify.com/embed/playlist/${playlist}" width="350" height="480" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>`;
-}
-
-
-
-//=============================================
-//======================GET AND SET AUTH COOKIE
-
-function setAuth() {
-	var url = window.location.href
-	accessToken = url.slice(url.indexOf('=')+1, url.indexOf('&'))
-
-	let now = new Date(),
-		expiration = now.getTime() + 3600000
-	now.setTime(expiration)
-	document.cookie = "access_token=" + accessToken + "; expires=" + now.toGMTString() + "; path=/";
-}
-
-function getCookie(cname) {
-  var name = cname + "=";
-  var decodedCookie = decodeURIComponent(document.cookie);
-  var ca = decodedCookie.split(';');
-  for(var i = 0; i <ca.length; i++) {
-    var c = ca[i];
-    while (c.charAt(0) == ' ') {
-      c = c.substring(1);
-    }
-    if (c.indexOf(name) == 0) {
-      return c.substring(name.length, c.length);
-    }
-  }
-  return "";
 }
